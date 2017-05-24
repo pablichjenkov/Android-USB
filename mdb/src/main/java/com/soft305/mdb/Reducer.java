@@ -1,24 +1,25 @@
 package com.soft305.mdb;
 
 
+import com.soft305.mdb.device.Cashless2;
 import com.soft305.mdb.input.PurchaseInput;
 import com.soft305.mdb.input.VmcInput;
 
-public abstract class Reducer {
+public abstract class Reducer<T extends MdbPeripheral> {
 
-    protected MdbCashlessSM mdbCashlessSM;
+    protected T mMdbPeripheral;
 
-    public Reducer (MdbCashlessSM mdbCashlessSM) {
-        this.mdbCashlessSM  = mdbCashlessSM;
+    public Reducer (T mdbPeripheral) {
+        this.mMdbPeripheral = mdbPeripheral;
     }
 
     /**
      * To be called by command handler to respond to vmc events
      * */
     public void sendToVmc(byte[] outboundData) {
-        mdbCashlessSM.send(outboundData);
+        mMdbPeripheral.send(outboundData);
     }
 
     public abstract void inputPurchase(PurchaseInput purchaseInput);
-    public abstract void inputVMC(VmcInput vmcInput);
+    public abstract boolean processVmcInput(VmcInput vmcInput);
 }

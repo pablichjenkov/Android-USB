@@ -1,6 +1,6 @@
 package com.soft305.mdb.commands;
 
-import com.soft305.mdb.MdbCashlessSM;
+import com.soft305.mdb.device.Cashless2;
 import com.soft305.mdb.input.VmcInput;
 
 /**
@@ -10,7 +10,7 @@ public class EmptyHandler extends CommandHandler {
 
 
 
-    public EmptyHandler(MdbCashlessSM mdbCashless) {
+    public EmptyHandler(Cashless2 mdbCashless) {
         super(mdbCashless);
     }
 

@@ -3,10 +3,8 @@ package com.soft305.socket.usb;
 import android.hardware.usb.UsbAccessory;
 import android.support.annotation.NonNull;
 
-/**
- * Created by pablo on 5/20/17.
- */
-public class UsbAoaEmptySocket extends UsbAoaSocket {
+
+/* package */ class UsbAoaEmptySocket extends UsbAoaSocket {
 
 
     UsbAoaEmptySocket(@NonNull UsbAoaManager aoaManager, UsbAccessory accessory) {

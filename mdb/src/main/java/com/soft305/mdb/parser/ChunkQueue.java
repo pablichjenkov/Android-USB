@@ -1,4 +1,4 @@
-package com.soft305.mdb.parse;
+package com.soft305.mdb.parser;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -10,13 +10,26 @@ public class ChunkQueue {
     private LinkedBlockingQueue<byte[]> chunkQueue;
     private byte[] leftOverChunk;
     private int leftOverChunkOffset = 0;
+    private boolean isSnapShot;
+    private int afterSnapShotOffer;
 
     public ChunkQueue() {
         chunkQueue = new LinkedBlockingQueue<>();
     }
 
+    public void setSnapShot(boolean snapShot) {
+        isSnapShot = snapShot;
+    }
+
+    public int getAfterSnapShotOffer() {
+        return afterSnapShotOffer;
+    }
+
     public boolean offer(byte[] chunk) {
         if (chunk.length > 0) {
+            if (isSnapShot) {
+                afterSnapShotOffer += chunk.length;
+            }
             return chunkQueue.offer(chunk);
         }
         return false;

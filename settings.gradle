@@ -1,1 +1,1 @@
-include ':app', ':socket', ':statemachine', ':mdb'
+include ':app', ':socket', ':mdb'

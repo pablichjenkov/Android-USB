@@ -2,7 +2,7 @@ package com.soft305.mdb.commands;
 
 import android.util.Log;
 
-import com.soft305.mdb.MdbCashlessSM;
+import com.soft305.mdb.device.Cashless2;
 import com.soft305.mdb.input.VmcInput;
 import com.soft305.mdb.reducer.VendingReducer;
 import com.soft305.mdb.util.ByteUtil;
@@ -24,7 +24,7 @@ public class VendSuccessHandler extends CommandHandler {
     };
 
 
-    public VendSuccessHandler(MdbCashlessSM mdbCashless) {
+    public VendSuccessHandler(Cashless2 mdbCashless) {
         super(mdbCashless);
     }
 

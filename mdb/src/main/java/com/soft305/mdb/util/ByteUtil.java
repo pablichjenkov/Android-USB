@@ -28,6 +28,10 @@ public class ByteUtil {
         return true;
     }
 
+    public static boolean areEqual(byte b1, byte b2) {
+        return Byte.compare(b1, b2) == 0;
+    }
+
     /**
      *  The given array must have reserved the last byte for the check sum
      * */

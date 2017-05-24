@@ -1,6 +1,6 @@
-package com.soft305.mdb.reducer;
+package com.soft305.mdb.reducer.cashless2;
 
-import com.soft305.mdb.MdbCashlessSM;
+import com.soft305.mdb.device.Cashless2;
 import com.soft305.mdb.Reducer;
 import com.soft305.mdb.commands.CommandHandler;
 import com.soft305.mdb.commands.ResetHandler;
@@ -9,15 +9,15 @@ import com.soft305.mdb.input.VmcInput;
 import com.soft305.mdb.util.ByteUtil;
 
 
-public class DisabledReducer extends Reducer {
+public class DisabledReducer extends Reducer<Cashless2> {
 
 
     private CommandHandler mCurCommandHandler;
     private final ResetHandler mResetHandler;
 
 
-    public DisabledReducer(MdbCashlessSM mdbCashlessSM) {
-        super(mdbCashlessSM);
+    public DisabledReducer(Cashless2 cashless2) {
+        super(cashless2);
         mResetHandler = new ResetHandler(this);
     }
 
@@ -27,13 +27,13 @@ public class DisabledReducer extends Reducer {
     }
 
     @Override
-    public void inputVMC(VmcInput vmcInput) {
+    public boolean processVmcInput(VmcInput vmcInput) {
 
         // Do the same reducer logic as in InactiveReducer
 
         if (vmcInput.chunkQueue.getAvailableLength() < 2) {
             // Wait till we have enough bytes to process CmdHead
-            return;
+            return false;
         }
 
         byte[] cmdHead = vmcInput.chunkQueue.peek(2);
@@ -52,6 +52,7 @@ public class DisabledReducer extends Reducer {
             mCurCommandHandler.onDataReceived(vmcInput);
         }
 
+        return true;
     }
 
 }

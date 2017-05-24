@@ -3,7 +3,6 @@ package com.soft305.mdb.commands;
 import android.util.Log;
 import com.soft305.mdb.Reducer;
 import com.soft305.mdb.input.VmcInput;
-import com.soft305.mdb.reducer.DisabledReducer;
 import com.soft305.mdb.util.ByteUtil;
 import com.soft305.mdb.util.StringUtil;
 

@@ -1,6 +1,6 @@
-package com.soft305.mdb.reducer;
+package com.soft305.mdb.reducer.cashless2;
 
-import com.soft305.mdb.MdbCashlessSM;
+import com.soft305.mdb.device.Cashless2;
 import com.soft305.mdb.Reducer;
 import com.soft305.mdb.commands.CommandHandler;
 import com.soft305.mdb.commands.ResetHandler;
@@ -11,7 +11,7 @@ import com.soft305.mdb.input.VmcInput;
 import com.soft305.mdb.util.ByteUtil;
 
 
-public class InactiveReducer extends Reducer {
+public class InactiveReducer extends Reducer<Cashless2> {
 
 
     private enum ParsingState {
@@ -28,8 +28,8 @@ public class InactiveReducer extends Reducer {
     private int mCurCommandLen = 0;
 
 
-    public InactiveReducer(MdbCashlessSM mdbCashlessSM) {
-        super(mdbCashlessSM);
+    public InactiveReducer(Cashless2 cashless2) {
+        super(cashless2);
         mCurParsingState = ParsingState.WaitCmdHead;
         mResetHandler = new ResetHandler(this);
         mSetupConfigurationHandler = new SetupConfigurationHandler(this);
@@ -45,12 +45,12 @@ public class InactiveReducer extends Reducer {
      * This method is a candidate for timeout if the expected cmd length is not buffered in time
      * */
     @Override
-    public void inputVMC(VmcInput vmcInput) {
+    public boolean processVmcInput(VmcInput vmcInput) {
 
         if (mCurParsingState.equals(ParsingState.WaitCmdHead)) {
             if (vmcInput.chunkQueue.getAvailableLength() < 2) {
                 // Wait till we have enough bytes to peek and process CmdHead
-                return;
+                return false;
             }
 
             byte[] cmdHead = vmcInput.chunkQueue.peek(2);
@@ -96,7 +96,7 @@ public class InactiveReducer extends Reducer {
             } else if (ByteUtil.compare(cmdHead, CommandHandler.READER_CMD_HEAD)) {
                 // At this point this Reducer is not used anymore, Candidate for garbage collector
                 // since no body should have refernces to it.
-                mdbCashlessSM.setReducer(new DisabledReducer(mdbCashlessSM));
+                mMdbPeripheral.setReducer(new DisabledReducer(mMdbPeripheral));
 
             } else {
                 // If none of the expected Commands assume is garbage or is not ours
@@ -110,7 +110,7 @@ public class InactiveReducer extends Reducer {
             }
         }
 
-
+        return true;
     }
 
 }

@@ -1,6 +1,6 @@
 package com.soft305.mdb.commands.device;
 
-import com.soft305.mdb.MdbCashlessSM;
+import com.soft305.mdb.device.Cashless2;
 import com.soft305.mdb.input.VmcInput;
 import com.soft305.mdb.util.ByteUtil;
 
@@ -37,7 +37,7 @@ public class BeginSessionHandler extends DeviceCommandHandler {
     *
     * */
 
-    public BeginSessionHandler(MdbCashlessSM mdbCashless) {
+    public BeginSessionHandler(Cashless2 mdbCashless) {
         super(mdbCashless);
     }
 

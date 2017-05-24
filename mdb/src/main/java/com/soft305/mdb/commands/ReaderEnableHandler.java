@@ -2,9 +2,9 @@ package com.soft305.mdb.commands;
 
 import android.util.Log;
 
-import com.soft305.mdb.MdbCashlessSM;
+import com.soft305.mdb.device.Cashless2;
 import com.soft305.mdb.input.VmcInput;
-import com.soft305.mdb.reducer.EnabledReducer;
+import com.soft305.mdb.reducer.cashless2.EnabledReducer;
 import com.soft305.mdb.util.ByteUtil;
 import com.soft305.mdb.util.StringUtil;
 
@@ -20,7 +20,7 @@ public class ReaderEnableHandler extends CommandHandler {
               0x01, 0x00
         };
 
-    public ReaderEnableHandler(MdbCashlessSM mdbCashless) {
+    public ReaderEnableHandler(Cashless2 mdbCashless) {
         super(mdbCashless);
     }
 

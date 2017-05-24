@@ -1,8 +1,8 @@
-package com.soft305.mdb.reducer;
+package com.soft305.mdb.reducer.cashless2;
 
 import android.util.Log;
 
-import com.soft305.mdb.MdbCashlessSM;
+import com.soft305.mdb.device.Cashless2;
 import com.soft305.mdb.Reducer;
 import com.soft305.mdb.input.PurchaseInput;
 import com.soft305.mdb.input.VmcInput;
@@ -10,10 +10,10 @@ import com.soft305.mdb.util.ByteUtil;
 import com.soft305.mdb.util.StringUtil;
 
 
-public class EnabledReducer extends Reducer {
+public class EnabledReducer extends Reducer<Cashless2> {
 
 
-    public EnabledReducer(MdbCashlessSM mdbCashless) {
+    public EnabledReducer(Cashless2 mdbCashless) {
         super(mdbCashless);
     }
 
@@ -23,8 +23,8 @@ public class EnabledReducer extends Reducer {
     }
 
     @Override
-    public void inputVMC(VmcInput vmcInput) {
-
+    public boolean processVmcInput(VmcInput vmcInput) {
+        return true;
     }
 
     // todo: replace

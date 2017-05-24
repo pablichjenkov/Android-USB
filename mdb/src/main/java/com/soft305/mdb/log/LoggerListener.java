@@ -1,4 +1,4 @@
-package com.soft305.mdb;
+package com.soft305.mdb.log;
 
 /**
  * Created by pablo on 5/21/17.

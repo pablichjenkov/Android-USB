@@ -1,6 +1,4 @@
-package com.soft305.mdb;
-
-import com.soft305.mdb.parse.ChunkQueue;
+package com.soft305.mdb.parser;
 
 import org.junit.Test;
 

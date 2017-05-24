@@ -1,6 +1,6 @@
 package com.soft305.mdb.commands;
 
-import com.soft305.mdb.MdbCashlessSM;
+import com.soft305.mdb.device.Cashless2;
 import com.soft305.mdb.Reducer;
 import com.soft305.mdb.input.VmcInput;
 
@@ -15,11 +15,11 @@ public abstract class CommandHandler {
     public static final byte[] REVAL_CMD_HEAD   = new byte[] {0x01, 0x65};
     public static final byte[] EXPAN_CMD_HEAD   = new byte[] {0x01, 0x67};
 
-    protected MdbCashlessSM mMdbCashless;
+    protected Cashless2 mMdbCashless;
     protected Reducer reducer;
 
     // TODO: remove this constructor
-    public CommandHandler(MdbCashlessSM mdbCashless) {
+    public CommandHandler(Cashless2 mdbCashless) {
 
     }
 

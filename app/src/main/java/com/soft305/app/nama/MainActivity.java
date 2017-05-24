@@ -7,8 +7,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
-import com.soft305.mdb.LoggerListener;
-import com.soft305.mdb.MdbCashlessSM;
+import com.soft305.mdb.log.LoggerListener;
+import com.soft305.mdb.MdbManager;
 import com.soft305.socket.Socket;
 import com.soft305.socket.usb.UsbAoaManager;
 
@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private UsbAoaManager mUsbAoaManager;
     private Socket mSocket;
 
-    private MdbCashlessSM mMdbCashless;
+    private MdbManager mMdbManager;
     private TextView mTxtMdbBus;
 
     @Override
@@ -37,10 +37,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSocketCreated(Socket socket) {
                 mSocket = socket;
+
                 //Here is the connection with the MDB Library
-                mMdbCashless = new MdbCashlessSM(mSocket);
-                mMdbCashless.setLoggerListener(mLoggerListener);
-                mMdbCashless.start();
+                mMdbManager = new MdbManager(mSocket);
+                mMdbManager.setLoggerListener(mLoggerListener);
+                mMdbManager.start();
 
             }
         });
