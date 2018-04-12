@@ -105,6 +105,16 @@ import java.util.concurrent.LinkedBlockingQueue;
     }
 
     @Override
+    public boolean isConnected() {
+        return mIsConnected;
+    }
+
+    @Override
+    public void write(byte[] data) {
+        mSenderThread.send(data);
+    }
+
+    @Override
     public void close() {
         if (mIsConnected) {
             mIsConnected = false;
@@ -114,11 +124,6 @@ import java.util.concurrent.LinkedBlockingQueue;
             // TODO: send this after receiving the close response
             //mDeviceConnection.releaseInterface(mUsbInterface);
         }
-    }
-
-    @Override
-    public void write(byte[] data) {
-        mSenderThread.send(data);
     }
 
     private void handleDataReceived(byte[] inboundData) {

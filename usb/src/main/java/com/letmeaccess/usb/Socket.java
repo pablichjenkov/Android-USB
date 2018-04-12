@@ -7,9 +7,12 @@ public interface Socket {
 
     void open();
 
-    void close();
+    boolean isConnected();
 
     void write(byte[] data);
+
+    void close();
+
 
     interface AccessoryListener {
         void onOpen();

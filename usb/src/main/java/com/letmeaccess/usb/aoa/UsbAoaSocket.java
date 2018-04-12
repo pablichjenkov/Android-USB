@@ -76,12 +76,15 @@ import java.io.OutputStream;
         }
     }
 
-    /*@Override
-    public  <U extends Socket.UsbAoaListener> void open(@NonNull U listener) {
+    @Override
+    public boolean isConnected() {
+        return mIsConnected;
+    }
 
-
-
-    }*/
+    @Override
+    public void write(byte[] data) {
+        mSenderThread.send(data);
+    }
 
     @Override
     public void close() {
@@ -98,11 +101,6 @@ import java.io.OutputStream;
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void write(byte[] data) {
-        mSenderThread.send(data);
     }
 
     private void handleDataReceived(byte[] inboundData) {
@@ -161,7 +159,7 @@ import java.io.OutputStream;
                             handleError();
                         }
 
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         handleError();
                     }
@@ -174,7 +172,7 @@ import java.io.OutputStream;
                     mHandler.removeCallbacksAndMessages(null);
                     mHandler.getLooper().quit();
 
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -185,7 +183,6 @@ import java.io.OutputStream;
 
     class SenderThread extends HandlerThread {
 
-        private static final int MAX_BUF_SIZE = 1024;
         private Handler mHandler;
         private boolean mThreadStarted;
 
