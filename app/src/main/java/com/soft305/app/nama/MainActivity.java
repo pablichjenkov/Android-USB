@@ -61,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
         //****************** USB AOA *******************
         //**********************************************
         mUsbAoaManager = new UsbAoaManager(this);
+
+        UsbAccessory[] attachedAccessories = mUsbAoaManager.getAttachedAccessories();
+        if (attachedAccessories == null || attachedAccessories.length <= 0) {
+            cout("No attached accessory");
+        }
+
         mUsbAoaManager.probe(new UsbAoaManager.Listener() {
             @Override
             public void onSelectAccessory(UsbAccessory[] accessoryArray) {

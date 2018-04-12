@@ -29,11 +29,15 @@ public class UsbAoaManager {
     // TODO(Pablo): Ask for a Handler to deliver the events on that handler or use BehaviorSubject
     public UsbAoaManager (Context context) {
         mContext = context;
+        mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         mAccessorySocketMap = new ArrayMap<>();
     }
 
+    public UsbAccessory[] getAttachedAccessories() {
+        return mUsbManager.getAccessoryList();
+    }
+
     public void probe(Listener listener) {
-        mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         mListener = listener;
         registerReceiver();
         checkAttachedAccessories();
@@ -94,7 +98,7 @@ public class UsbAoaManager {
     }
 
     private void checkAttachedAccessories() {
-        UsbAccessory[] accessoryList = mUsbManager.getAccessoryList();
+        UsbAccessory[] accessoryList = getAttachedAccessories();
         if (accessoryList != null && accessoryList.length > 0) {
             mListener.onSelectAccessory(accessoryList);
         }

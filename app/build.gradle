@@ -22,7 +22,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     //implementation project(':usb')
-    implementation 'com.letmeaccess:usb:1.0.0'
+    implementation 'com.letmeaccess:usb:1.2.1'
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
 

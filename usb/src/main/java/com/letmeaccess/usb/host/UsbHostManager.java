@@ -30,11 +30,15 @@ public class UsbHostManager {
 
     public UsbHostManager (Context context) {
         mContext = context;
+        mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         mUsbHostSocketMap = new ArrayMap<>();
     }
 
+    public Map<String, UsbDevice> getAttachedDevices() {
+        return mUsbManager.getDeviceList();
+    }
+
     public void probe(Listener listener) {
-        mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         mListener = listener;
         registerReceiver();
         checkAttachedDevices();
@@ -95,7 +99,7 @@ public class UsbHostManager {
     }
 
     private void checkAttachedDevices() {
-        Map<String,UsbDevice> deviceMap = mUsbManager.getDeviceList();
+        Map<String, UsbDevice> deviceMap = getAttachedDevices();
         if (deviceMap != null && deviceMap.size() > 0) {
             mListener.onSelectUsbDevice(deviceMap);
         }
