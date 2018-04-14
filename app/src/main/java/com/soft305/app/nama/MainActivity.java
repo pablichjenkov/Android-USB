@@ -118,6 +118,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        public byte[] onProvideCloseCommand() {
+            return new byte[0];
+        }
+
+        @Override
         public void onOpen() {
             isUsbSocketOpen = true;
             cout("AccessoryListener.onOpen()");

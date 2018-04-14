@@ -28,6 +28,7 @@ import java.io.OutputStream;
 
     private boolean mIsPendingPermission;
     private boolean mIsConnected;
+    private boolean mIsDisconnecting;
     private boolean isError;
 
     /* package */ UsbAoaSocket(@NonNull UsbAoaManager aoaManager, @NonNull UsbAccessory accessory
@@ -83,22 +84,28 @@ import java.io.OutputStream;
 
     @Override
     public void write(byte[] data) {
-        mSenderThread.send(data);
+        if (mIsConnected) {
+            mSenderThread.send(data);
+        }
     }
 
     @Override
     public void close() {
+        if (mIsConnected) {
+            mIsConnected = false;
+            mIsDisconnecting = true;
+            mReceiverThread.close();
+            mSenderThread.send(mListener.onProvideCloseCommand());
+        }
+    }
+
+    private void closeStream() {
         try {
+            mFileDescriptor.close();
+            mInputStream.close();
+            mOutputStream.close();
 
-            if (mIsConnected) {
-                mIsConnected = false;
-                mFileDescriptor.close();
-                mReceiverThread.close();
-                mSenderThread.send(new byte[]{'c','l','o','s','e'});
-                mSenderThread.close();
-            }
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -107,10 +114,15 @@ import java.io.OutputStream;
         mListener.onRead(inboundData);
     }
 
+    /**
+     * It maybe called multiple times since closing a stream in one direction may generate an error
+     * in the other direction. We attend only the first call.
+     */
     private void handleError() {
         if (!isError) {
             isError = true;
-            close();
+            mIsConnected = false;
+            closeStream();
             mAoaManager.disposeAoaSocket(this);
         }
     }
@@ -168,9 +180,12 @@ import java.io.OutputStream;
                 // Before leaving the Thread close the inputStream.
                 try {
 
-                    mInputStream.close();
                     mHandler.removeCallbacksAndMessages(null);
                     mHandler.getLooper().quit();
+
+                    if (mIsDisconnecting) {
+                        mSenderThread.close();
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -217,15 +232,12 @@ import java.io.OutputStream;
         }
 
         public void close() {
-            try {
+            mThreadStarted = false;
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler.getLooper().quit();
 
-                mThreadStarted = false;
-                mOutputStream.close();
-                mHandler.removeCallbacksAndMessages(null);
-                mHandler.getLooper().quit();
-
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (mIsDisconnecting) {
+                closeStream();
             }
         }
 

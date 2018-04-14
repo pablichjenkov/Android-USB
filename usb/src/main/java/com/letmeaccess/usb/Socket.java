@@ -18,6 +18,7 @@ public interface Socket {
         void onOpen();
         void onRead(byte[] data);
         void onError(AccessoryError error);
+        byte[] onProvideCloseCommand();
     }
 
     enum AccessoryError {
@@ -28,6 +29,7 @@ public interface Socket {
         void onOpen();
         void onRead(byte[] data);
         void onError(HostError error);
+        byte[] onProvideCloseCommand();
     }
 
     enum HostError {

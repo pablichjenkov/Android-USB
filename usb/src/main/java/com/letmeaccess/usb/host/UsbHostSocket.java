@@ -30,10 +30,11 @@ import java.util.concurrent.LinkedBlockingQueue;
     private BlockingQueue<UsbRequest> mWriteRequestQueue = new LinkedBlockingQueue<>();
     private UsbRequest mReadRequest = new UsbRequest();
     private ByteBuffer mInputByteBuffer;
-    private Object mReadRequestMonitor = new Object();
+    private final Object mReadRequestMonitor = new Object();
     private boolean mIsReadInQueue;
     private boolean mIsPendingPermission;
     private boolean mIsConnected;
+    private boolean mIsDisconnecting;
     private boolean isError;
 
     /* package */ UsbHostSocket(@NonNull UsbHostManager usbHostManager
@@ -111,18 +112,28 @@ import java.util.concurrent.LinkedBlockingQueue;
 
     @Override
     public void write(byte[] data) {
-        mSenderThread.send(data);
+        if (mIsConnected) {
+            mSenderThread.send(data);
+        }
     }
 
     @Override
     public void close() {
         if (mIsConnected) {
             mIsConnected = false;
+            mIsDisconnecting = true;
             mReceiverThread.close();
-            mSenderThread.send(new byte[]{'c','l','o','s','e'});
-            mSenderThread.close();
-            // TODO: send this after receiving the close response
-            //mDeviceConnection.releaseInterface(mUsbInterface);
+            mSenderThread.send(mListener.onProvideCloseCommand());
+        }
+    }
+
+    private void closeDevice() {
+        try {
+            mDeviceConnection.releaseInterface(mUsbInterface);
+            mDeviceConnection.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -130,11 +141,15 @@ import java.util.concurrent.LinkedBlockingQueue;
         mListener.onRead(inboundData);
     }
 
+    /**
+     * It maybe called multiple times since closing a stream in one direction may generate an error
+     * in the other direction. We pay attention only the first call.
+     */
     private void handleError() {
         if (!isError) {
             isError = true;
-            close();
-            //mUsbHosManager.disposeUsbHostSocket(this);
+            closeDevice();
+            mUsbHostManager.disposeUsbHostSocket(this);
         }
     }
 
@@ -194,6 +209,11 @@ import java.util.concurrent.LinkedBlockingQueue;
                     mHandler.removeCallbacksAndMessages(null);
                     mHandler.getLooper().quit();
 
+                    if (mIsDisconnecting) {
+                        mRequestRouterThread.close();
+                        mSenderThread.close();
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -244,10 +264,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
         public void close() {
             mThreadStarted = false;
-            //mOutputStream.close();
             mHandler.removeCallbacksAndMessages(null);
             mHandler.getLooper().quit();
 
+            if (mIsDisconnecting) {
+                closeDevice();
+            }
         }
 
     }
@@ -255,7 +277,6 @@ import java.util.concurrent.LinkedBlockingQueue;
     class RequestRouterThread extends HandlerThread {
 
         private Handler mHandler;
-        private boolean mThreadStarted;
         private boolean mThreadRunning;
 
         public RequestRouterThread(String name) {
@@ -266,7 +287,7 @@ import java.util.concurrent.LinkedBlockingQueue;
         public synchronized void start() {
             super.start();
             mHandler = new Handler(getLooper());
-            mThreadStarted = true;
+            mThreadRunning = true;
 
             mHandler.post(new Runnable() {
                 @Override
@@ -304,7 +325,7 @@ import java.util.concurrent.LinkedBlockingQueue;
         }
 
         public void close() {
-            mThreadStarted = false;
+            mThreadRunning = false;
             mHandler.removeCallbacksAndMessages(null);
             mHandler.getLooper().quit();
         }
