@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.ArrayMap;
 import android.util.Log;
 import com.letmeaccess.usb.Socket;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class UsbAoaManager {
 
     private static final String TAG = "UsbAoaManager";
-    private static final String ACTION_USB_PERMISSION = "com.soft305.socket.action.USB_ACCESSORY_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "com.letmeaccess.usb.action.USB_ACCESSORY_PERMISSION";
     private Context mContext;
     private UsbManager mUsbManager;
     private Listener mListener;
@@ -31,6 +32,10 @@ public class UsbAoaManager {
         mContext = context;
         mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         mAccessorySocketMap = new ArrayMap<>();
+    }
+
+    public static void onNewIntent(Context context, Intent newIntent) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(newIntent);
     }
 
     public UsbAccessory[] getAttachedAccessories() {
@@ -82,10 +87,12 @@ public class UsbAoaManager {
     }
 
     public void close() {
-        mContext.unregisterReceiver(mUsbAoaReceiver);
+        unregisterReceiver();
+
         for (UsbAoaSocket socket : mAccessorySocketMap.values()) {
             socket.close();
         }
+
         mAccessorySocketMap.clear();
     }
 
@@ -95,6 +102,12 @@ public class UsbAoaManager {
         filter.addAction(UsbManager.ACTION_USB_ACCESSORY_ATTACHED);
 
         mContext.registerReceiver(mUsbAoaReceiver, filter);
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mUsbAoaReceiver, filter);
+    }
+
+    private void unregisterReceiver() {
+        mContext.unregisterReceiver(mUsbAoaReceiver);
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mUsbAoaReceiver);
     }
 
     private void checkAttachedAccessories() {

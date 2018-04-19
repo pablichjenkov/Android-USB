@@ -173,6 +173,7 @@ import java.io.OutputStream;
 
                     } catch (Exception e) {
                         e.printStackTrace();
+                        mThreadRunning = false;
                         handleError();
                     }
                 }

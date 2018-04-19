@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.ArrayMap;
 import android.util.Log;
 import com.letmeaccess.usb.Socket;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class UsbHostManager {
 
     private static final String TAG = "UsbHostManager";
-    private static final String ACTION_USB_PERMISSION = "com.soft305.socket.action.USB_HOST_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "com.letmeaccess.usb.action.USB_HOST_PERMISSION";
     private Context mContext;
     private UsbManager mUsbManager;
     private Listener mListener;
@@ -83,10 +84,12 @@ public class UsbHostManager {
     }
 
     public void close() {
-        mContext.unregisterReceiver(mUsbHostReceiver);
+        unregisterReceiver();
+
         for (UsbHostSocket socket : mUsbHostSocketMap.values()) {
             socket.close();
         }
+
         mUsbHostSocketMap.clear();
     }
 
@@ -96,6 +99,12 @@ public class UsbHostManager {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
 
         mContext.registerReceiver(mUsbHostReceiver, filter);
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mUsbHostReceiver, filter);
+    }
+
+    private void unregisterReceiver() {
+        mContext.unregisterReceiver(mUsbHostReceiver);
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mUsbHostReceiver);
     }
 
     private void checkAttachedDevices() {

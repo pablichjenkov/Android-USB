@@ -199,6 +199,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
                     } catch (Exception e) {
                         e.printStackTrace();
+                        mThreadRunning = false;
                         handleError();
                     }
                 }
